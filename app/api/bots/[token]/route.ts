@@ -5,13 +5,14 @@ import { getAdminsCollection } from "@/lib/mongodb";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { token } = await params;
   const col = await getAdminsCollection();
-  const admin = await col.findOne({ adminToken: params.token });
+  const admin = await col.findOne({ adminToken: token });
 
   if (!admin) {
     return NextResponse.json({ error: "Bot not found." }, { status: 404 });
@@ -21,6 +22,6 @@ export async function DELETE(
     return NextResponse.json({ error: "Cannot remove the owner bot." }, { status: 403 });
   }
 
-  await col.deleteOne({ adminToken: params.token });
+  await col.deleteOne({ adminToken: token });
   return NextResponse.json({ success: true });
 }
