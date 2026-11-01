@@ -19,17 +19,27 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ profile }) {
-      const discordId = (profile as any)?.id;
-      if (!discordId) return false;
+      try {
+        const discordId = (profile as any)?.id;
+        if (!discordId) {
+          console.error("[signIn] No Discord ID in profile");
+          return false;
+        }
 
-      const col = await getAdminsCollection();
-      const owners = await col.find({ owner: true }).toArray();
+        const col = await getAdminsCollection();
+        const owners = await col.find({ owner: true }).toArray();
+        console.log(`[signIn] Discord ID: ${discordId}, owners found: ${owners.length}`);
 
-      const ownerIds = owners
-        .map((o) => decodeTokenUserId(o.adminToken))
-        .filter(Boolean);
+        const ownerIds = owners
+          .map((o) => decodeTokenUserId(o.adminToken))
+          .filter(Boolean);
+        console.log(`[signIn] Decoded owner IDs:`, ownerIds);
 
-      return ownerIds.includes(discordId);
+        return ownerIds.includes(discordId);
+      } catch (err) {
+        console.error("[signIn] Error:", err);
+        return false;
+      }
     },
     async session({ session, token }) {
       if (session.user) {
