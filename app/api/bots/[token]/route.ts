@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getAdminsCollection } from "@/lib/mongodb";
+import { exec } from "child_process";
 
 export async function DELETE(
   req: NextRequest,
@@ -23,5 +24,10 @@ export async function DELETE(
   }
 
   await col.deleteOne({ adminToken: token });
+
+  if (admin.pm2Name) {
+    exec(`pm2 stop ${admin.pm2Name}`);
+  }
+
   return NextResponse.json({ success: true });
 }

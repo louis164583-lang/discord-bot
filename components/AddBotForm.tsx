@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function AddBotForm() {
   const [token, setToken] = useState("");
   const [channelId, setChannelId] = useState("");
+  const [pm2Name, setPm2Name] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function AddBotForm() {
     const res = await fetch("/api/bots", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ adminToken: token, alertChannel: channelId }),
+      body: JSON.stringify({ adminToken: token, alertChannel: channelId, pm2Name }),
     });
 
     const data = await res.json();
@@ -31,6 +32,7 @@ export default function AddBotForm() {
 
     setToken("");
     setChannelId("");
+    setPm2Name("");
     router.refresh();
   }
 
@@ -52,6 +54,13 @@ export default function AddBotForm() {
         onChange={(e) => setChannelId(e.target.value)}
         className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500"
         required
+      />
+      <input
+        type="text"
+        placeholder="PM2 process name (e.g. member-alert-bot)"
+        value={pm2Name}
+        onChange={(e) => setPm2Name(e.target.value)}
+        className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500"
       />
       <button
         type="submit"

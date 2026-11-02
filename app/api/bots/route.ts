@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { adminToken, alertChannel } = await req.json();
+  const { adminToken, alertChannel, pm2Name } = await req.json();
 
   if (!adminToken || !alertChannel) {
     return NextResponse.json({ error: "Token and channel ID are required." }, { status: 400 });
@@ -45,6 +45,6 @@ export async function POST(req: NextRequest) {
     }
   } catch {}
 
-  await col.insertOne({ adminToken, alertChannel, owner: false, username });
+  await col.insertOne({ adminToken, alertChannel, owner: false, username, ...(pm2Name ? { pm2Name } : {}) });
   return NextResponse.json({ success: true }, { status: 201 });
 }
