@@ -11,20 +11,25 @@ export async function POST() {
   const bots = await col.find({ username: { $in: [null, undefined] } }).toArray();
 
   let updated = 0;
+  const results = [];
   for (const bot of bots) {
     try {
+      const token = bot.adminToken.startsWith("Bot ") ? bot.adminToken.slice(4) : bot.adminToken;
       const res = await fetch("https://discord.com/api/v10/users/@me", {
-        headers: { Authorization: `Bot ${bot.adminToken}` },
+        headers: { Authorization: `Bot ${token}` },
       });
-      if (res.ok) {
-        const user = await res.json();
-        if (user.username) {
-          await col.updateOne({ adminToken: bot.adminToken }, { $set: { username: user.username } });
-          updated++;
-        }
+      const body = await res.json();
+      if (res.ok && body.username) {
+        await col.updateOne({ adminToken: bot.adminToken }, { $set: { username: body.username } });
+        updated++;
+        results.push({ status: res.status, username: body.username });
+      } else {
+        results.push({ status: res.status, error: body });
       }
-    } catch {}
+    } catch (e: unknown) {
+      results.push({ error: String(e) });
+    }
   }
 
-  return NextResponse.json({ total: bots.length, updated });
+  return NextResponse.json({ total: bots.length, updated, results });
 }
