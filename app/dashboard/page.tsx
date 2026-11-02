@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { getAdminsCollection } from "@/lib/mongodb";
 import AddBotForm from "@/components/AddBotForm";
 import RemoveButton from "@/components/RemoveButton";
+import BackfillButton from "@/components/BackfillButton";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -32,7 +33,10 @@ export default async function DashboardPage() {
         </div>
 
         <div className="bg-gray-900 rounded-lg p-6 space-y-4">
-          <h2 className="text-lg font-semibold">Connected Bots ({admins.length})</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Connected Bots ({admins.length})</h2>
+            <BackfillButton />
+          </div>
           {admins.length === 0 ? (
             <p className="text-gray-500 text-sm">No bots added yet.</p>
           ) : (
