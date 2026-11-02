@@ -34,6 +34,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Token already exists." }, { status: 409 });
   }
 
-  await col.insertOne({ adminToken, alertChannel, owner: false });
+  let username = "Unknown";
+  try {
+    const discordRes = await fetch("https://discord.com/api/v10/users/@me", {
+      headers: { Authorization: `Bot ${adminToken}` },
+    });
+    if (discordRes.ok) {
+      const user = await discordRes.json();
+      username = user.username;
+    }
+  } catch {}
+
+  await col.insertOne({ adminToken, alertChannel, owner: false, username });
   return NextResponse.json({ success: true }, { status: 201 });
 }

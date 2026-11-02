@@ -39,6 +39,7 @@ export default async function DashboardPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-gray-400 text-left border-b border-gray-800">
+                  <th className="pb-2">Username</th>
                   <th className="pb-2">Token</th>
                   <th className="pb-2">Alert Channel</th>
                   <th className="pb-2">Role</th>
@@ -48,6 +49,9 @@ export default async function DashboardPage() {
               <tbody className="divide-y divide-gray-800">
                 {admins.map((admin, i) => (
                   <tr key={i} className="py-2">
+                    <td className="py-3 text-white font-medium">
+                      {admin.username ?? "Unknown"}
+                    </td>
                     <td className="py-3 font-mono text-gray-300">
                       {admin.adminToken.slice(0, 20)}***
                     </td>
