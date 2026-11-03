@@ -8,6 +8,7 @@ import AddBotForm from "@/components/AddBotForm";
 import RemoveButton from "@/components/RemoveButton";
 import BackfillButton from "@/components/BackfillButton";
 import RestartButton from "@/components/RestartButton";
+import AutoRefresh from "@/components/AutoRefresh";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -40,6 +41,7 @@ export default async function DashboardPage() {
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-semibold">Connected Bots ({admins.length})</h2>
               <span className="text-xs text-gray-400">{onlineCount} online</span>
+              <AutoRefresh intervalSeconds={30} />
             </div>
             <div className="flex items-center gap-3">
               <BackfillButton />
