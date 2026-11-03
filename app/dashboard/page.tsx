@@ -11,6 +11,7 @@ import RestartButton from "@/components/RestartButton";
 import AutoRefresh from "@/components/AutoRefresh";
 import ViewTokenButton from "@/components/ViewTokenButton";
 import EditTokenForm from "@/components/EditTokenForm";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -23,6 +24,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white p-8">
+      <LoadingOverlay />
       <div className="max-w-4xl mx-auto space-y-8">
 
         <div className="flex items-center justify-between">
