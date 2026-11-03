@@ -7,6 +7,7 @@ import { getAdminsCollection } from "@/lib/mongodb";
 import AddBotForm from "@/components/AddBotForm";
 import RemoveButton from "@/components/RemoveButton";
 import BackfillButton from "@/components/BackfillButton";
+import RestartButton from "@/components/RestartButton";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -14,6 +15,8 @@ export default async function DashboardPage() {
 
   const col = await getAdminsCollection();
   const admins = await col.find({}, { projection: { _id: 0 } }).toArray();
+
+  const onlineCount = admins.filter((a) => a.status === "online").length;
 
   return (
     <div className="min-h-screen bg-gray-950 text-white p-8">
@@ -34,8 +37,14 @@ export default async function DashboardPage() {
 
         <div className="bg-gray-900 rounded-lg p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Connected Bots ({admins.length})</h2>
-            <BackfillButton />
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-semibold">Connected Bots ({admins.length})</h2>
+              <span className="text-xs text-gray-400">{onlineCount} online</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <BackfillButton />
+              <RestartButton />
+            </div>
           </div>
           {admins.length === 0 ? (
             <p className="text-gray-500 text-sm">No bots added yet.</p>
@@ -43,6 +52,7 @@ export default async function DashboardPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-gray-400 text-left border-b border-gray-800">
+                  <th className="pb-2">Status</th>
                   <th className="pb-2">Username</th>
                   <th className="pb-2">Token</th>
                   <th className="pb-2">Alert Channel</th>
@@ -53,6 +63,18 @@ export default async function DashboardPage() {
               <tbody className="divide-y divide-gray-800">
                 {admins.map((admin, i) => (
                   <tr key={i} className="py-2">
+                    <td className="py-3">
+                      <span
+                        className={`inline-block w-2.5 h-2.5 rounded-full ${
+                          admin.status === "online"
+                            ? "bg-green-500"
+                            : admin.status === "offline"
+                            ? "bg-red-500"
+                            : "bg-gray-600"
+                        }`}
+                        title={admin.status ?? "unknown"}
+                      />
+                    </td>
                     <td className="py-3 text-white font-medium">
                       {admin.username ?? "Unknown"}
                     </td>
