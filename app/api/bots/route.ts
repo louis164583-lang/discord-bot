@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   let username = "Unknown";
   try {
     const discordRes = await fetch("https://discord.com/api/v10/users/@me", {
-      headers: { Authorization: `Bot ${adminToken}` },
+      headers: { Authorization: adminToken },
     });
     if (discordRes.ok) {
       const user = await discordRes.json();

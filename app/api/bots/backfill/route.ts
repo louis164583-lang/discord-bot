@@ -8,15 +8,14 @@ export async function POST() {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const col = await getAdminsCollection();
-  const bots = await col.find({ username: { $in: [null, undefined] } }).toArray();
+  const bots = await col.find({ $or: [{ username: { $in: [null, undefined] } }, { username: "Unknown" }] }).toArray();
 
   let updated = 0;
   const results = [];
   for (const bot of bots) {
     try {
-      const token = bot.adminToken.startsWith("Bot ") ? bot.adminToken.slice(4) : bot.adminToken;
       const res = await fetch("https://discord.com/api/v10/users/@me", {
-        headers: { Authorization: `Bot ${token}` },
+        headers: { Authorization: bot.adminToken },
       });
       const body = await res.json();
       if (res.ok && body.username) {
